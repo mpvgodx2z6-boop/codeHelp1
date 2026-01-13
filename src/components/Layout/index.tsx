@@ -28,7 +28,7 @@ interface IProps {
 const onLogout = () => {
   localStorage.removeItem('isDarkTheme');
   // 这里保留原项目的登录路径（你后续要改成 /login 再统一调整）
-  window.location.href = '/zh/user/login';
+  window.location.href = '/zh/login';
 };
 /***********退出登录功能结束************/
 
