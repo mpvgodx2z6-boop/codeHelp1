@@ -1,23 +1,27 @@
 import {headers} from 'next/headers';
 import {notFound} from 'next/navigation';
 import {getRequestConfig} from 'next-intl/server';
-import {locales} from './navigation';
+import {locales, defaultLocale} from './navigation';
 
 export default getRequestConfig(async ({locale}) => {
+  const resolvedLocale = (locale ?? defaultLocale) as any;
+
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound();
+  if (!locales.includes(resolvedLocale)) notFound();
 
   const now = headers().get('x-now');
   const timeZone = headers().get('x-time-zone') ?? 'Europe/Vienna';
-  const messages = (await import(`../messages/${locale}.json`)).default;
+  const messages = (await import(`../messages/${resolvedLocale}.json`)).default;
 
   return {
+    // 关键：必须返回 locale，否则 next-intl 未来会报错
+    locale: resolvedLocale,
     now: now ? new Date(now) : undefined,
     timeZone,
     messages,
     defaultTranslationValues: {
       globalString: 'Global string',
-      highlight: (chunks) => <strong>{chunks}</strong>
+      highlight: (chunks: any) => <strong>{chunks}</strong>
     },
     formats: {
       dateTime: {
@@ -28,7 +32,7 @@ export default getRequestConfig(async ({locale}) => {
         }
       }
     },
-    onError(error) {
+    onError(error: any) {
       if (
         error.message ===
         (process.env.NODE_ENV === 'production'
@@ -40,7 +44,7 @@ export default getRequestConfig(async ({locale}) => {
         console.error(JSON.stringify(error.message));
       }
     },
-    getMessageFallback({key, namespace}) {
+    getMessageFallback({key, namespace}: any) {
       return (
         '`getMessageFallback` called for ' +
         [namespace, key].filter((part) => part != null).join('.')

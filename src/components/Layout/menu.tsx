@@ -1,103 +1,71 @@
-import { 
-    FundOutlined, 
-    LayoutOutlined, 
-    BarChartOutlined, 
-    DesktopOutlined, 
-    ScheduleOutlined, 
-    CalculatorOutlined, 
-    UserOutlined, 
-    WalletOutlined,
-    BuildOutlined,
-    OpenAIOutlined,
-    PartitionOutlined,
-    FileExcelOutlined,
-    PieChartOutlined,
-    LinkOutlined,
-    FileMarkdownOutlined
+import {
+  DashboardOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
+  HistoryOutlined,
+  CheckCircleOutlined,
+  BulbOutlined,
+  ProfileOutlined,
+  BuildOutlined,
+  ExportOutlined
 } from '@ant-design/icons';
 import React from 'react';
 
-const getNavList = (t: any) => {
-    return [
+const getNavList = (_t: any) => {
+  return [
+    {
+      key: '/',
+      icon: <DashboardOutlined />,
+      label: '概览',
+      children: [
         {
-            key: '/',
-            icon: <DesktopOutlined />,
-            label: t('dashboard'),
-            children: [
-                {
-                    key: '/dashboard',
-                    icon: <BarChartOutlined />,
-                    label: t('customChart')
-                },
-                {
-                    key: '/dashboard/monitor',
-                    icon: <FundOutlined />,
-                    label: t('monitor')
-                },
-                {
-                    key: '/dashboard/chart',
-                    icon: <PieChartOutlined />,
-                    label: t('chart')
-                },
-                {
-                    key: '/dashboard/rpa',
-                    icon: <PartitionOutlined />,
-                    label: t('rpa')
-                }
-            ]
-        },
-        {
-            key: '/user',
-            icon: <UserOutlined />,
-            label: t('userManage')
-        },
-        {
-            key: '/agents',
-            icon: <OpenAIOutlined />,
-            label: t('agents')
-        },
-        {
-            key: '/excel',
-            icon: <FileExcelOutlined />,
-            label: t('excel')
-        },
-        {
-            key: '/md',
-            icon: <FileMarkdownOutlined />,
-            label: t('mdDoc')
-        },
-        {
-            key: 'http://flowmix.turntip.cn/docx',
-            icon: <LinkOutlined />,
-            label: t('outlink')
-        },
-        {
-            key: '/formEngine',
-            icon: <CalculatorOutlined />,
-            label: t('formEngine')
-        },
-        {
-            key: '/dragMode',
-            icon: <BuildOutlined />,
-            label: t('dragMode')
-        },
-        {
-            key: '/board',
-            icon: <LayoutOutlined />,
-            label: t('board')
-        },
-        {
-            key: '/order',
-            icon: <ScheduleOutlined />,
-            label: t('orderList')
-        },
-        {
-            key: '/resource',
-            icon: <WalletOutlined />,
-            label: t('resource')
-        },
-        
-    ]
-}
+          key: '/dashboard',
+          icon: <DashboardOutlined />,
+          label: '仪表盘'
+        }
+      ]
+    },
+    {
+      key: '/standards',
+      icon: <FileTextOutlined />,
+      label: '规范中心'
+    },
+    {
+      key: '/modules',
+      icon: <AppstoreOutlined />,
+      label: '模块管理'
+    },
+    {
+      key: '/changes',
+      icon: <HistoryOutlined />,
+      label: '变更记录'
+    },
+    {
+      key: '/tests',
+      icon: <CheckCircleOutlined />,
+      label: '人工测试'
+    },
+    {
+      key: '/prompts',
+      icon: <BulbOutlined />,
+      label: '提示词库'
+    },
+    {
+      key: '/templates',
+      icon: <ProfileOutlined />,
+      label: '模板管理'
+    },
+    {
+      key: '/builder',
+      icon: <BuildOutlined />,
+      label: '生成器（8块输出）'
+    },
+    {
+      key: '/export',
+      icon: <ExportOutlined />,
+      label: '导出/备份'
+    }
+  ];
+};
 
-export default getNavList
+export default getNavList;

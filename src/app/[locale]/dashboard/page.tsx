@@ -1,47 +1,25 @@
-'use client'
-// import { useTranslations} from 'next-intl';
-import { Button, Input, type FormProps } from 'antd';
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { HolderOutlined } from '@ant-design/icons';
+'use client';
+
+import React from 'react';
+import {Card, Typography} from 'antd';
 import Layout from '@/components/Layout';
-import Chart from '@/components/Chart';
-import Sortable from 'sortablejs';
 
-
-import boardList from './board';
-
-import styles from './index.module.less';
-
-
-export default function Dashboard() {
-  // const t = useTranslations();
-  const boardContainerRef = useRef<any>();
-
-  useEffect(() => {
-    setTimeout(() => {
-        const sortable = new Sortable(document.querySelector('#dashboard') as HTMLElement, {
-            handle: ".moveBtn"
-        })
-    }, 1000)
-   
-  }, [boardContainerRef])
-
+/***********仪表盘功能开始************/
+export default function DashboardPage() {
   return (
-    <Layout curActive='/dashboard'>
-        <main className={styles.dashboardWrap}>
-            <div className={styles.content} id='dashboard'>
-                {
-                    boardList.map((v, i) => {
-                        return <div key={i} style={{width: v.w, height: v.h}} className={styles.card}> 
-                            <span className='moveBtn'><HolderOutlined /></span>
-                            <Chart data={v.data} type={v.type} id={v.id} />
-                         </div>
-                    })
-                }
-            </div>
-        </main>
+    <Layout curActive="/dashboard">
+      <main style={{padding: 16}}>
+        <Typography.Title level={3} style={{marginTop: 0}}>
+          仪表盘
+        </Typography.Title>
+
+        <Card>
+          <Typography.Text type="secondary">
+            开发中：后续展示最近变更、最近测试、最近生成、最近备份时间。
+          </Typography.Text>
+        </Card>
+      </main>
     </Layout>
-    
   );
 }
+/***********仪表盘功能结束************/
