@@ -1,40 +1,40 @@
-import type {ChangeRecord, ModuleRecord, StandardRecord, TemplateRecord, TestRecord} from '@/db/schema';
+import type { ChangeRecord, ModuleRecord, StandardRecord, TemplateRecord, TestRecord } from '@/db/schema';
 
 /***********Builder 输出生成开始************/
 export type BuildBlockResult = {
-  key: string;
-  title: string;
-  enabled: boolean;
-  markdown: string;
+  key : string;
+  title : string;
+  enabled : boolean;
+  markdown : string;
 };
 
 export type BuildResult = {
-  blocks: BuildBlockResult[];
-  mergedMarkdown: string;
+  blocks : BuildBlockResult[];
+  mergedMarkdown : string;
 };
 
-function mdList(items: string[]) {
+function mdList(items : string[]) {
   const xs = (items || []).filter(Boolean);
   if (!xs.length) return '-（无）';
   return xs.map((x) => `- ${x}`).join('\n');
 }
 
-export function buildMarkdown(params: {
-  template: TemplateRecord;
-  module?: ModuleRecord;
-  changes: ChangeRecord[];
-  tests: TestRecord[];
-  standards: StandardRecord[];
+export function buildMarkdown(params : {
+  template : TemplateRecord;
+  module ?: ModuleRecord;
+  changes : ChangeRecord[];
+  tests : TestRecord[];
+  standards : StandardRecord[];
 }) : BuildResult {
-  const {template, module, changes, tests, standards} = params;
+  const { template, module, changes, tests, standards } = params;
 
   const moduleRefs = module
     ? {
-        files: module.relatedFiles || [],
-        fields: module.relatedFields || [],
-        apis: module.relatedApis || []
-      }
-    : {files: [], fields: [], apis: []};
+      files: module.relatedFiles || [],
+      fields: module.relatedFields || [],
+      apis: module.relatedApis || []
+    }
+    : { files: [], fields: [], apis: [] };
 
   const changeRefs = {
     files: Array.from(new Set(changes.flatMap((c) => c.affectedFiles || []))),
@@ -54,8 +54,16 @@ export function buildMarkdown(params: {
     .map((t) => `### ${t.title}\n\n- 结论：${t.conclusion}\n- 反馈原文：\n${t.feedbackRaw ? `\n> ${t.feedbackRaw.split('\n').join('\n> ')}` : '-（无）'}\n\n- 后续动作：\n${mdList(t.followUpActions)}`)
     .join('\n\n');
 
-  const standardsSummary = standards.map((s) => `### ${s.title}\n\n**摘要：** ${s.summary || '（无）'}`).join('\n\n');
-
+  const standardsSummary = standards
+    .map((s) => {
+      const level = s.level ? `（${s.level}）` : '';
+      const scope = s.scope ? `[${s.scope}]` : '';
+      const checklist = (s.checklistItems || []).length
+        ? `\n\n**Checklist：**\n${mdList(s.checklistItems)}`
+        : '';
+      return `### ${s.title} ${scope}${level}\n\n**摘要：** ${s.summary || '（无）'}${checklist}`;
+    })
+    .join('\n\n');
   const dbChecklist = changes
     .filter((c) => c.type === 'create_table' || c.type === 'alter_table')
     .map((c) => {
@@ -64,9 +72,9 @@ export function buildMarkdown(params: {
     })
     .join('\n\n');
 
-  const blocks: BuildBlockResult[] = (template.blocks || []).map((b) => {
+  const blocks : BuildBlockResult[] = (template.blocks || []).map((b) => {
     if (!b.enabled) {
-      return {key: b.key, title: b.title, enabled: false, markdown: ''};
+      return { key: b.key, title: b.title, enabled: false, markdown: '' };
     }
 
     let body = '';
@@ -97,18 +105,37 @@ export function buildMarkdown(params: {
       case 'standards':
         body = `${b.content || ''}\n\n${standardsSummary || '-（未选择规范）'}`.trim();
         break;
-      case 'requirements':
-        body = b.content || '-（未填写输出要求，可在模板中配置）';
+      // 在 buildMarkdown 里，case 'requirements' 用下面替换
+      case 'requirements': {
+        /***********输出规范（prompting must）自动追加开始************/
+        const promptingMust = standards.filter((s) => s.scope === 'prompting' && s.level === 'must');
+
+        const promptingText = promptingMust.length
+          ? `### 自动追加：输出规范（scope=prompting, level=must）\n\n` +
+          promptingMust
+            .map((s) => {
+              const checklist = (s.checklistItems || []).length ? `\n\n**Checklist：**\n${mdList(s.checklistItems)}` : '';
+              const full = (s.contentChunks || []).join('\n');
+              return `#### ${s.title}\n\n${full || '（无正文）'}${checklist}`;
+            })
+            .join('\n\n')
+          : '';
+
+        const base = b.content || '-（未填写输出要求，可在模板中配置）';
+
+        body = [base, promptingText].filter(Boolean).join('\n\n').trim();
+        /***********输出规范（prompting must）自动追加结束************/
         break;
+      }
       default:
         body = b.content || '';
     }
 
     const md = `## ${b.title}\n\n${body}\n`;
-    return {key: b.key, title: b.title, enabled: true, markdown: md};
+    return { key: b.key, title: b.title, enabled: true, markdown: md };
   });
 
   const mergedMarkdown = blocks.filter((x) => x.enabled).map((x) => x.markdown.trim()).join('\n\n') + '\n';
-  return {blocks, mergedMarkdown};
+  return { blocks, mergedMarkdown };
 }
 /***********Builder 输出生成结束************/

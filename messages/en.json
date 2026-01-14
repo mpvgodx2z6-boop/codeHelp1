@@ -1,6 +1,6 @@
 {
     "index": {
-        "title": "Next-Admin",
+        "title": "写代码提示词管理工具",
         "desc": "A full-stack, out-of-the-box, multi-page backend management solution developed based on NextJS 14.0+ and antd5.0",
         "log": {
             "title": "Next-Admin process planning",
