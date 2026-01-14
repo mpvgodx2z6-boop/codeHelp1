@@ -52,6 +52,7 @@
     "butterfly-dag": "5.1.0-beta.38",
     "crypto": "^1.0.1",
     "d3-scale-chromatic": "^3.1.0",
+    "dexie": "^4.2.1",
     "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "next": "14.1.3",
